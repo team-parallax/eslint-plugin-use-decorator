@@ -25,7 +25,7 @@ class SomeClass {
 		return someParameter;
 	}
 	@assert
-	async someMethod(
+	async someAsyncMethod(
 		someParameter: number
 	): number {
 		return someParameter;
@@ -39,12 +39,113 @@ class SomeClass {
 						{
 							"name": "assert",
 							"public": true,
-//							"async": true
 						},
 					]
 				}
 			]
-		}
+		},{
+			code: `
+class SomeClass {
+	@assert
+	private somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+	@assert
+	someMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+	@assert
+	async someAsyncMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"public": true,
+						},
+					]
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	@assert
+	private somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+	@assert
+	someMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+	@assert
+	async someAsyncMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert"
+						},
+					]
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	@assert
+	private async somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+	someMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+	async someAsyncMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"private": true,
+							"async": true
+						},
+					]
+				}
+			]
+		},
 	],
 	invalid: [],
 });
