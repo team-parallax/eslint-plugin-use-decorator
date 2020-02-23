@@ -146,6 +146,77 @@ class SomeClass {
 				}
 			]
 		},
+		{
+			code: `
+class SomeClass {
+	@assert
+	static somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"static": true,
+						},
+					]
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	@assert
+	private static async somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"static": true,
+							"private": true,
+							"async": true,
+						},
+					]
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	@assert
+	private static async somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"private": true,
+						},
+					]
+				}
+			]
+		},
 	],
 	invalid: [],
 });

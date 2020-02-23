@@ -8,10 +8,12 @@ const shouldCheckRule = node => item => {
 	const isPrivate = item.private;
 	const isPublic = item.public;
 	const isAsync = item.async;
-	const solution = getSolution(isPrivate, isPublic, isAsync);
+	const isStatic = item.static;
+	const solution = getSolution(isPrivate, isPublic, isAsync, isStatic);
 	const test = Number(shouldCheckRulePrivate(node, isPrivate)) * binaryFactors.isPrivate
 		+ Number(shouldCheckRulePublic(node, isPublic)) * binaryFactors.isPublic
-		+ Number(shouldCheckRuleAsync(node, isAsync)) * binaryFactors.isAsync;
+		+ Number(shouldCheckRuleAsync(node, isAsync)) * binaryFactors.isAsync
+		+ Number(shouldCheckRuleStatic(node, isStatic)) * binaryFactors.isStatic;
 	/* https://stackoverflow.com/a/21257341/3143953 */
 	console.log(solution, test, solution & test, test & solution);
 	return (test & solution) === solution;
@@ -19,30 +21,40 @@ const shouldCheckRule = node => item => {
 const binaryFactors = {
 	isPrivate: 1,
 	isPublic: 2,
-	isAsync: 4
+	isAsync: 4,
+	isStatic: 8,
 };
 const defaultOption = {
 	isPrivate: false,
 	isPublic: false,
-	isAsync: false
+	isAsync: false,
+	isStatic: false,
 };
-const getSolution = (isPrivate, isPublic, isAsync) => {
+const getSolution = (isPrivate, isPublic, isAsync, isStatic) => {
 	const privateFactor = (typeof isPrivate === "undefined"
-//		? 1
 		? Number(defaultOption.isPrivate)
 		: Number(isPrivate)) * binaryFactors.isPrivate;
 	const publicFactor = (typeof isPublic === "undefined"
-//		? 1
 		? Number(defaultOption.isPublic)
 		: Number(isPublic)) * binaryFactors.isPublic;
 	const asyncFactor = (typeof isAsync === "undefined"
-//		? 1
 		? Number(defaultOption.isAsync)
 		: Number(isAsync)) * binaryFactors.isAsync;
-	console.log("privateFactor + publicFactor + asyncFactor", privateFactor, publicFactor, asyncFactor);
-	return privateFactor + publicFactor + asyncFactor
+	const staticFactor = (typeof isStatic === "undefined"
+		? Number(defaultOption.isStatic)
+		: Number(isStatic)) * binaryFactors.isStatic;
+	return privateFactor + publicFactor + asyncFactor + staticFactor
 };
 const getName = item => item.name;
+const shouldCheckRuleStatic = (node, isStatic) => {
+	if(typeof isStatic === "undefined") {
+		return defaultOption.isStatic;
+	}
+	else if(isStatic && node.static) {
+		return true;
+	}
+	else return !isStatic && !node.static;
+};
 const shouldCheckRuleAsync = (node, isAsync) => {
 	if(typeof isAsync === "undefined") {
 		return defaultOption.isAsync;
@@ -64,7 +76,6 @@ const shouldCheckRulePrivate = (node, isPrivate) => {
 	if(typeof isPrivate === "undefined") {
 		return defaultOption.isPrivate;
 	}
-	console.log("isPrivate",isPrivate,node.accessibility);
 	return (!isPrivate && (!node.hasOwnProperty("accessibility") || node.accessibility !== "private"))
 		|| (isPrivate && node.hasOwnProperty("accessibility") && node.accessibility === "private");
 };
