@@ -13,7 +13,6 @@ ruleTester.run('use-assert-decorator', rules["use-assert-decorator"], {
 		{
 			code: `
 class SomeClass {
-	@assert
 	private somePrivateMethod(
 		someParameter: number
 	): number {
@@ -39,9 +38,8 @@ class SomeClass {
 					"methods": [
 						{
 							"name": "assert",
-							"private": true,
 							"public": true,
-							"async": true
+//							"async": true
 						},
 					]
 				}

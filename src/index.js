@@ -14,7 +14,7 @@ const shouldCheckRule = node => item => {
 		+ Number(shouldCheckRuleAsync(node, isAsync)) * binaryFactors.isAsync;
 	/* https://stackoverflow.com/a/21257341/3143953 */
 	console.log(solution, test, solution & test, test & solution);
-	return (test & solution) !== solution;
+	return (test & solution) === solution;
 };
 const binaryFactors = {
 	isPrivate: 1,
