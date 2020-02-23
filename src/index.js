@@ -4,47 +4,67 @@ const getDecoratorName = decorator => decorator
 	&& (decorator.expression.callee
 		&& decorator.expression.callee.name
 		|| decorator.expression.name);
-const shouldCheckHoF = node => {
-	return item => {
-		const isPrivate = item.private;
-		const isPublic = item.public;
-		const isAsync = item.async;
-		const solution = getSolution(isPrivate, isPublic, isAsync);
-		const test = Number(shouldCheckPrivate(node, isPrivate))
-			+ Number(shouldCheckPublic(node, isPublic)) * 2
-			+ Number(shouldCheckAsync(node, isAsync)) * 4;
-		/* https://stackoverflow.com/a/21257341/3143953 */
-		console.log(solution, test, solution & test);
-		return (solution & test) === solution;
-	}
+const shouldCheckRule = node => item => {
+	const isPrivate = item.private;
+	const isPublic = item.public;
+	const isAsync = item.async;
+	const solution = getSolution(isPrivate, isPublic, isAsync);
+	const test = Number(shouldCheckRulePrivate(node, isPrivate)) * binaryFactors.isPrivate
+		+ Number(shouldCheckRulePublic(node, isPublic)) * binaryFactors.isPublic
+		+ Number(shouldCheckRuleAsync(node, isAsync)) * binaryFactors.isAsync;
+	/* https://stackoverflow.com/a/21257341/3143953 */
+	console.log(solution, test, solution & test, test & solution);
+	return (test & solution) !== solution;
+};
+const binaryFactors = {
+	isPrivate: 1,
+	isPublic: 2,
+	isAsync: 4
+};
+const defaultOption = {
+	isPrivate: false,
+	isPublic: false,
+	isAsync: false
 };
 const getSolution = (isPrivate, isPublic, isAsync) => {
-	const privateFactor = typeof isPrivate === "undefined" ? 1 : Number(isPrivate);
-	const publicFactor = (typeof isPublic === "undefined" ? 1 : Number(isPublic)) * 2;
-	const asyncFactor = (typeof isAsync === "undefined" ? 1 : Number(isAsync)) * 4;
+	const privateFactor = (typeof isPrivate === "undefined"
+//		? 1
+		? Number(defaultOption.isPrivate)
+		: Number(isPrivate)) * binaryFactors.isPrivate;
+	const publicFactor = (typeof isPublic === "undefined"
+//		? 1
+		? Number(defaultOption.isPublic)
+		: Number(isPublic)) * binaryFactors.isPublic;
+	const asyncFactor = (typeof isAsync === "undefined"
+//		? 1
+		? Number(defaultOption.isAsync)
+		: Number(isAsync)) * binaryFactors.isAsync;
+	console.log("privateFactor + publicFactor + asyncFactor", privateFactor, publicFactor, asyncFactor);
 	return privateFactor + publicFactor + asyncFactor
 };
 const getName = item => item.name;
-const shouldCheckAsync = (node, isAsync) => {
+const shouldCheckRuleAsync = (node, isAsync) => {
 	if(typeof isAsync === "undefined") {
-		return true;
+		return defaultOption.isAsync;
 	}
 	else if(isAsync && node.value.async) {
 		return true;
 	}
 	else return !isAsync && !node.value.async;
 };
-const shouldCheckPublic = (node, isPublic) => {
+const shouldCheckRulePublic = (node, isPublic) => {
 	if(typeof isPublic === "undefined") {
-		return true;
+		return defaultOption.isPublic;
 	}
 	return (!isPublic && (!node.hasOwnProperty("accessibility") || node.accessibility !== "private"))
-	|| (isPublic && node.hasOwnProperty("accessibility") && node.accessibility !== "private");
+	|| (isPublic && node.hasOwnProperty("accessibility") && node.accessibility !== "private")
+	|| (isPublic && typeof node.accessibility === "undefined")
 };
-const shouldCheckPrivate = (node, isPrivate) => {
+const shouldCheckRulePrivate = (node, isPrivate) => {
 	if(typeof isPrivate === "undefined") {
-		return true;
+		return defaultOption.isPrivate;
 	}
+	console.log("isPrivate",isPrivate,node.accessibility);
 	return (!isPrivate && (!node.hasOwnProperty("accessibility") || node.accessibility !== "private"))
 		|| (isPrivate && node.hasOwnProperty("accessibility") && node.accessibility === "private");
 };
@@ -61,7 +81,7 @@ const getMissingMethodDecoratorsSingle = (necessaryMethodDecorators, node) => {
 };
 const getMissingMethodDecorators = (necessaryMethodDecorators = [], node) => {
 	const necessaryMethodDecoratorsFiltered = necessaryMethodDecorators
-		.filter(shouldCheckHoF(node))
+		.filter(shouldCheckRule(node))
 		.map(getName);
 	return getMissingMethodDecoratorsSingle(
 		necessaryMethodDecoratorsFiltered,
@@ -90,7 +110,7 @@ const getMissingParamDecoratorsSingle = (necessaryParamDecorators, node) => {
 };
 const getMissingParamDecorators = (necessaryParamDecorators = [], node) => {
 	const necessaryParamDecoratorsFiltered = necessaryParamDecorators
-		.filter(shouldCheckHoF(node))
+		.filter(shouldCheckRule(node))
 		.map(getName);
 	return getMissingParamDecoratorsSingle(
 		necessaryParamDecoratorsFiltered,
