@@ -15,7 +15,6 @@ const shouldCheckRule = node => item => {
 		+ Number(shouldCheckRuleAsync(node, isAsync)) * binaryFactors.isAsync
 		+ Number(shouldCheckRuleStatic(node, isStatic)) * binaryFactors.isStatic;
 	/* https://stackoverflow.com/a/21257341/3143953 */
-	console.log(solution, test, solution & test, test & solution);
 	return (test & solution) === solution;
 };
 const binaryFactors = {
@@ -83,17 +82,14 @@ const getMissingMethodDecoratorsSingle = (necessaryMethodDecorators, node) => {
 	if(node.decorators) {
 		for (const decorator of node.decorators) {
 			const methodName = getDecoratorName(decorator);
-			if (necessaryMethodDecorators.includes(methodName)) {
-				necessaryMethodDecorators.splice(necessaryMethodDecorators.indexOf(methodName), 1);
-			}
+			necessaryMethodDecorators = necessaryMethodDecorators.filter(item => item.name !== methodName);
 		}
 	}
 	return necessaryMethodDecorators;
 };
 const getMissingMethodDecorators = (necessaryMethodDecorators = [], node) => {
 	const necessaryMethodDecoratorsFiltered = necessaryMethodDecorators
-		.filter(shouldCheckRule(node))
-		.map(getName);
+		.filter(shouldCheckRule(node));
 	return getMissingMethodDecoratorsSingle(
 		necessaryMethodDecoratorsFiltered,
 		node);
@@ -103,7 +99,7 @@ const getMissingParamDecoratorsSingle = (necessaryParamDecorators, node) => {
 	if(node.value && node.value.params) {
 		for(const param of node.value.params) {
 			const decorators = param.decorators;
-			const necessaryParamDecoratorsPerParam = [...necessaryParamDecorators];
+			const necessaryParamDecoratorsPerParam = [...necessaryParamDecorators.map(getName)];
 			if(decorators) {
 				for(const decorator of decorators) {
 					const paramName = getDecoratorName(decorator);
@@ -122,39 +118,51 @@ const getMissingParamDecoratorsSingle = (necessaryParamDecorators, node) => {
 const getMissingParamDecorators = (necessaryParamDecorators = [], node) => {
 	const necessaryParamDecoratorsFiltered = necessaryParamDecorators
 		.filter(shouldCheckRule(node))
-		.map(getName);
 	return getMissingParamDecoratorsSingle(
 		necessaryParamDecoratorsFiltered,
 		node);
 };
 module.exports.rules = {
-	"use-assert-decorator": context => {
-		const options = context.options[0] || {};
-		const {
-			params: necessaryParamDecorators,
-			methods: necessaryMethodDecorators
-		} = options;
-		return {
-			MethodDefinition(node) {
-				/* method */
-				const missingDecorators = getMissingMethodDecorators(necessaryMethodDecorators, node);
-				for (const missingDecorator of missingDecorators) {
-					context.report(node, `"${ missingDecorator }"-decorator is missing`);
-				}
-				/* params */
-				const missingParamDecorator = getMissingParamDecorators(necessaryParamDecorators, node);
-				for(const paramName of missingParamDecorator) {
-					context.report(node, `"${paramName}"-decorator is missing`);
-				}
-			},
-//			Identifier(node) {
-//				if(node.parent.type === "FunctionExpression") {
-//					console.log("Parameter", node);
-//					console.log(node.parent);
-//					console.log(node.decorators);
-//					context.report(node, 'Parameter');
-//				}
-//			}
-		};
+	"use-assert-decorator": {
+		meta: {
+			messages: {
+				method: "'{{decorator}}'-decorator is missing for {{types}} method.",
+				param: "'{{decorator}}'-decorator is missing for param of {{types}} method.",
+			}
+		},
+		create: context => {
+			const options = context.options[0] || {};
+			const {
+				params: necessaryParamDecorators,
+				methods: necessaryMethodDecorators
+			} = options;
+			return {
+				MethodDefinition(node) {
+					/* method */
+					const missingDecorators = getMissingMethodDecorators(necessaryMethodDecorators, node);
+					for (const missingDecorator of missingDecorators) {
+						context.report({
+							node,
+							messageId: "method",
+							data: {
+								decorator: missingDecorator.name,
+								types: Object.keys(missingDecorator).filter(key => key !== "name").join(", ")
+							}
+						});
+					}
+					/* params */
+					const missingParamDecorator = getMissingParamDecorators(necessaryParamDecorators, node);
+					for(const paramName of missingParamDecorator) {
+						context.report({
+							node,
+							messageId: "param",
+							data: {
+								decorator: paramName
+							}
+						});
+					}
+				},
+			};
+		}
 	}
 };

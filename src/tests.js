@@ -218,5 +218,74 @@ class SomeClass {
 			]
 		},
 	],
-	invalid: [],
+	invalid: [
+		{
+			code: `
+class SomeClass {
+	somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"public": true,
+						},
+					]
+				}
+			],
+			errors: [
+				{
+					messageId: "method",
+					data: {
+						decorator: "assert",
+						types: "public"
+					},
+					line: 3,
+					column: 2,
+				},
+			],
+		},
+		{
+			code: `
+class SomeClass {
+	private static async somePrivateMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					"params": [],
+					"methods": [
+						{
+							"name": "assert",
+							"private": true,
+							"static": true,
+							"async": true,
+						},
+					]
+				}
+			],
+			errors: [
+				{
+					messageId: "method",
+					data: {
+						decorator: "assert",
+						types: "private, static, async"
+					},
+					line: 3,
+					column: 2,
+				},
+			],
+		},
+	],
 });
