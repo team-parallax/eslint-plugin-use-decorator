@@ -34,8 +34,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"public": true,
@@ -68,8 +68,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"public": true,
@@ -103,8 +103,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert"
 						},
@@ -135,8 +135,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"private": true,
@@ -159,8 +159,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"static": true,
@@ -182,8 +182,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"static": true,
@@ -207,12 +207,93 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"private": true,
 						},
+					]
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	someMethod(
+		@assertParameter someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					params: [
+						{
+							"name": "assertParameter",
+							"public": true
+						}
+					],
+					methods: []
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	private static async someMethod(
+		@assertParameter someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					params: [
+						{
+							"name": "assertParameter",
+							"private": true,
+							"static": true,
+							"async": true
+						}
+					],
+					methods: []
+				}
+			]
+		},
+		{
+			code: `
+class SomeClass {
+	@assert
+	@errorcatch
+	private static async someMethod(
+		@assertParameter someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					params: [
+						{
+							"name": "assertParameter",
+							"private": true,
+							"static": true,
+							"async": true
+						}
+					],
+					methods: [
+						{
+							"name": "assert",
+							"private": true
+						},
+						{
+							"name": "errorcatch",
+							"private": true
+						}
 					]
 				}
 			]
@@ -231,8 +312,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"public": true,
@@ -264,8 +345,8 @@ class SomeClass {
 `,
 			options: [
 				{
-					"params": [],
-					"methods": [
+					params: [],
+					methods: [
 						{
 							"name": "assert",
 							"private": true,
@@ -280,6 +361,69 @@ class SomeClass {
 					messageId: "method",
 					data: {
 						decorator: "assert",
+						types: "private, static, async"
+					},
+					line: 3,
+					column: 2,
+				},
+			],
+		},
+
+		{
+			code: `
+class SomeClass {
+	private static async someMethod(
+		someParameter: number
+	): number {
+		return someParameter;
+	}
+}
+`,
+			options: [
+				{
+					params: [
+						{
+							"name": "assertParameter",
+							"private": true,
+							"static": true,
+							"async": true
+						}
+					],
+					methods: [
+						{
+							"name": "assert",
+							"private": true
+						},
+						{
+							"name": "errorcatch",
+							"private": true
+						}
+					]
+				}
+			],
+			errors: [
+				{
+					messageId: "method",
+					data: {
+						decorator: "assert",
+						types: "private"
+					},
+					line: 3,
+					column: 2,
+				},
+				{
+					messageId: "method",
+					data: {
+						decorator: "errorcatch",
+						types: "private"
+					},
+					line: 3,
+					column: 2,
+				},
+				{
+					messageId: "param",
+					data: {
+						decorator: "assertParameter",
 						types: "private, static, async"
 					},
 					line: 3,

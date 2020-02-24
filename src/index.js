@@ -99,31 +99,33 @@ const getMissingParamDecoratorsSingle = (necessaryParamDecorators, node) => {
 	if(node.value && node.value.params) {
 		for(const param of node.value.params) {
 			const decorators = param.decorators;
-			const necessaryParamDecoratorsPerParam = [...necessaryParamDecorators.map(getName)];
+			let necessaryParamDecoratorsPerParam = [...necessaryParamDecorators];
 			if(decorators) {
 				for(const decorator of decorators) {
 					const paramName = getDecoratorName(decorator);
-					if(necessaryParamDecoratorsPerParam.includes(paramName)) {
-						necessaryParamDecoratorsPerParam.splice(necessaryParamDecoratorsPerParam.indexOf(paramName), 1);
-					}
+					necessaryParamDecoratorsPerParam = necessaryParamDecoratorsPerParam.filter(item => item.name !== paramName);
+//					if(necessaryParamDecoratorsPerParam.includes(paramName)) {
+//						necessaryParamDecoratorsPerParam.splice(necessaryParamDecoratorsPerParam.indexOf(paramName), 1);
+//					}
 				}
 			}
-			for(const paramName of necessaryParamDecoratorsPerParam) {
-				missingParamDecorator.push(paramName);
-			}
+//			for(const paramName of necessaryParamDecoratorsPerParam) {
+				missingParamDecorator.push(...necessaryParamDecoratorsPerParam);
+//			}
 		}
 	}
 	return missingParamDecorator;
 };
 const getMissingParamDecorators = (necessaryParamDecorators = [], node) => {
 	const necessaryParamDecoratorsFiltered = necessaryParamDecorators
-		.filter(shouldCheckRule(node))
+		.filter(shouldCheckRule(node));
 	return getMissingParamDecoratorsSingle(
 		necessaryParamDecoratorsFiltered,
 		node);
 };
 module.exports.rules = {
 	"use-assert-decorator": {
+		/* TODO: create more meta data */
 		meta: {
 			messages: {
 				method: "'{{decorator}}'-decorator is missing for {{types}} method.",
@@ -157,7 +159,8 @@ module.exports.rules = {
 							node,
 							messageId: "param",
 							data: {
-								decorator: paramName
+								decorator: paramName.name,
+								types: Object.keys(paramName).filter(key => key !== "name").join(", ")
 							}
 						});
 					}
