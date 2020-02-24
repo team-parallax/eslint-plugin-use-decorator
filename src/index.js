@@ -124,9 +124,14 @@ const getMissingParamDecorators = (necessaryParamDecorators = [], node) => {
 		node);
 };
 module.exports.rules = {
-	"use-assert-decorator": {
-		/* TODO: create more meta data */
+	"use-decorator": {
+		name: "use-decorator",
 		meta: {
+			type: "suggestion",
+			docs: {
+				description: "Enforce custom-decorators",
+				recommended: "error"
+			},
 			messages: {
 				method: "'{{decorator}}'-decorator is missing for {{types}} method.",
 				param: "'{{decorator}}'-decorator is missing for param of {{types}} method.",
