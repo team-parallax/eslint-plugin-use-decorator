@@ -104,14 +104,9 @@ const getMissingParamDecoratorsSingle = (necessaryParamDecorators, node) => {
 				for(const decorator of decorators) {
 					const paramName = getDecoratorName(decorator);
 					necessaryParamDecoratorsPerParam = necessaryParamDecoratorsPerParam.filter(item => item.name !== paramName);
-//					if(necessaryParamDecoratorsPerParam.includes(paramName)) {
-//						necessaryParamDecoratorsPerParam.splice(necessaryParamDecoratorsPerParam.indexOf(paramName), 1);
-//					}
 				}
 			}
-//			for(const paramName of necessaryParamDecoratorsPerParam) {
-				missingParamDecorator.push(...necessaryParamDecoratorsPerParam);
-//			}
+			missingParamDecorator.push(...necessaryParamDecoratorsPerParam);
 		}
 	}
 	return missingParamDecorator;

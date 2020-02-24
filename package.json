@@ -1,5 +1,18 @@
 {
+	"author": "Marcel Michelfelder",
+	"bugs": {
+		"url": "https://github.com/team-parallax/eslint-plugin-use-decorator/issues"
+	},
+	"license": "MIT",
 	"name": "eslint-plugin-use-decorator",
+	"description": "This is a custom plugin for eslint which enforces the use of decorators on methods.",
+	"homepage": "https://github.com/team-parallax/eslint-plugin-use-decorator#readme",
+	"keywords": [
+		"eslint",
+		"eslintplugin",
+		"decorator",
+		"typescript"
+	],
 	"version": "0.1.0",
 	"main": "index.js",
 	"devDependencies": {
@@ -7,6 +20,10 @@
 		"@typescript-eslint/parser": "^2.20.0",
 		"eslint": "^6.8.0",
 		"typescript": "^3.8.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/team-parallax/eslint-plugin-use-decorator.git"
 	},
 	"scripts": {
 		"test": "node src/tests.js"

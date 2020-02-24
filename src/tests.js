@@ -8,7 +8,7 @@ const ruleTester = new RuleTester({
 	},
 	parser: require.resolve('@typescript-eslint/parser'),
 });
-ruleTester.run('use-assert-decorator', rules["use-assert-decorator"], {
+ruleTester.run('use-decorator', rules["use-decorator"], {
 	valid: [
 		{
 			code: `
