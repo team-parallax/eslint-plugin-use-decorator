@@ -1,6 +1,6 @@
 {
-	"name": "eslint-plugin-parallax-rules",
-	"version": "0.0.5",
+	"name": "eslint-plugin-use-decorator",
+	"version": "0.1.0",
 	"main": "index.js",
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^2.20.0",
