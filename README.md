@@ -45,6 +45,12 @@ Add this to your `.eslintrc`
           "async": true,
           "private": true
         }
+      ],
+      "class": [
+        {
+          "superClass": ["Vue", "Mixins"],
+          "name": "Component"
+        },
       ]
     }]
   }
