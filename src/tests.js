@@ -12,6 +12,110 @@ ruleTester.run('use-decorator', rules["use-decorator"], {
 	valid: [
 		{
 			code: `
+			@Component({})
+export default class SomeClass {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"name": "Component"
+						}
+					]
+				}
+			]
+		},
+		{
+			code: `
+			@Component({})
+export default class SomeClass extends Vue {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"name": "Component"
+						}
+					]
+				}
+			]
+		},
+		{
+			code: `
+export default class SomeClass {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"superClass": ['Vue', "Mixins"],
+							"name": "Component"
+						}
+					]
+				}
+			]
+		},
+		{
+			code: `
+export default class SomeClass extends Vue1 {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"superClass": ['Vue', "Mixins"],
+							"name": "Component"
+						}
+					]
+				}
+			]
+		},
+		{
+			code: `
+			@Component({})
+export default class SomeClass extends Vue {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"superClass": ['Vue', "Mixins"],
+							"name": "Component"
+						}
+					]
+				}
+			]
+		},
+		{
+			code: `
+			@Component
+export default class SomeClass extends Mixins {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"superClass": ['Vue', "Mixins"],
+							"name": "Component"
+						}
+					]
+				}
+			]
+		},
+		{
+			code: `
 class SomeClass {
 	private somePrivateMethod(
 		someParameter: number
@@ -300,6 +404,84 @@ class SomeClass {
 		},
 	],
 	invalid: [
+		{
+			code: `
+export default class SomeClass {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"name": "Component"
+						}
+					]
+				}
+			],
+			errors: [
+				{
+					messageId: "class",
+					data: {
+						decorator: "Component",
+						name: "SomeClass"
+					}
+				},
+			],
+		},
+		{
+			code: `
+export default class SomeClass extends Vue {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"superClass": ['Vue', "Mixins"],
+							"name": "Component"
+						}
+					]
+				}
+			],
+			errors: [
+				{
+					messageId: "class",
+					data: {
+						decorator: "Component",
+						name: "SomeClass"
+					}
+				},
+			],
+		},
+		{
+			code: `
+			@Donno
+export default class SomeClass extends Mixins {}
+`,
+			options: [
+				{
+					params: [],
+					methods: [],
+					class: [
+						{
+							"superClass": ['Vue', "Mixins"],
+							"name": "Component"
+						}
+					]
+				}
+			],
+			errors: [
+				{
+					messageId: "class",
+					data: {
+						decorator: "Component",
+						name: "SomeClass"
+					}
+				},
+			],
+		},
 		{
 			code: `
 class SomeClass {

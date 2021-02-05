@@ -118,6 +118,34 @@ const getMissingParamDecorators = (necessaryParamDecorators = [], node) => {
 		necessaryParamDecoratorsFiltered,
 		node);
 };
+
+const getMissingClassDecorators = (necessaryClassDecorators = [], node) => {
+	const necessaryClassDecoratorsFiltered = necessaryClassDecorators
+		.filter(shouldCheckRule(node));
+	return getMissingClassDecoratorsSingle(
+		necessaryClassDecoratorsFiltered,
+			node);
+};
+
+const getMissingClassDecoratorsSingle = (necessaryClassDecorators = [], node) => {
+	return necessaryClassDecorators
+		.filter(necessaryClassDecorator =>
+			!Array.isArray(necessaryClassDecorator.superClass) ||
+			!necessaryClassDecorator.superClass.length > 0 ||
+			(node.superClass &&
+				necessaryClassDecorator.superClass.indexOf(node.superClass.name) !== -1)
+		)
+		.filter(necessaryClassDecorator => {
+			if (node.decorators) {
+				return !node.decorators.some(decorator => {
+					const methodName = getDecoratorName(decorator);
+					return necessaryClassDecorator.name === methodName;
+				})
+			}
+			return true;
+		})
+};
+
 module.exports.rules = {
 	"use-decorator": {
 		name: "use-decorator",
@@ -128,6 +156,7 @@ module.exports.rules = {
 				recommended: "error"
 			},
 			messages: {
+				class: "'{{decorator}}'-decorator is missing for {{name}} class.",
 				method: "'{{decorator}}'-decorator is missing for {{types}} method.",
 				param: "'{{decorator}}'-decorator is missing for param of {{types}} method.",
 			}
@@ -136,9 +165,23 @@ module.exports.rules = {
 			const options = context.options[0] || {};
 			const {
 				params: necessaryParamDecorators,
-				methods: necessaryMethodDecorators
+				methods: necessaryMethodDecorators,
+				class: necessaryClassDecorators
 			} = options;
 			return {
+				ClassDeclaration(node) {
+					const missingDecorators = getMissingClassDecorators(necessaryClassDecorators, node)
+					for (const missingDecorator of missingDecorators) {
+						context.report({
+							node,
+							messageId: "class",
+							data: {
+								decorator: missingDecorator.name,
+								name: node.id.name
+							}
+						});
+					}
+				},
 				MethodDefinition(node) {
 					/* method */
 					const missingDecorators = getMissingMethodDecorators(necessaryMethodDecorators, node);
